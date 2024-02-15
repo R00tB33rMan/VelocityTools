@@ -194,11 +194,11 @@ public class Settings extends YamlSerializable {
       public List<String> IGNORED_IPS = List.of("79.555.*", "228.1337.*");
     }
 
-    @Comment(@CommentValue("Hub Splitter configuration section"))
+    @Comment(@CommentValue("Hub Splitter configuration section."))
     public static class HUB_SPREAD {
       public boolean ENABLED = true;
       public List<String> SERVERS = List.of("hub-1", "hub-2");
-      @Comment(@CommentValue("Possible methods: 'LOWEST', 'CYCLE'"))
+      @Comment(@CommentValue("Possible methods: \"LOWEST\", \"CYCLE\""))
       public String HUB_SPREAD_METHOD = "LOWEST";
     }
   }
