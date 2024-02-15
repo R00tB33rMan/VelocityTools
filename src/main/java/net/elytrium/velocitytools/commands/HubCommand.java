@@ -24,6 +24,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.proxy.command.builtin.CommandMessages;
 import java.util.List;
+import net.elytrium.velocitytools.handlers.HubSpreadHandler;
 import net.elytrium.velocitytools.Settings;
 import net.elytrium.velocitytools.VelocityTools;
 import net.kyori.adventure.text.Component;
@@ -31,6 +32,7 @@ import net.kyori.adventure.text.Component;
 public class HubCommand implements SimpleCommand {
 
   private final ProxyServer server;
+  private final HubSpreadHandler spreadHandler;
   private final List<String> servers;
   private int serversCounter;
   private final Component disabledServer;
@@ -38,8 +40,9 @@ public class HubCommand implements SimpleCommand {
   private final String youGotMoved;
   private final Component youGotMovedComponent;
 
-  public HubCommand(ProxyServer server) {
+  public HubCommand(ProxyServer server, HubSpreadHandler spreadHandler) {
     this.server = server;
+    this.spreadHandler = spreadHandler;
     this.servers = Settings.IMP.COMMANDS.HUB.SERVERS;
     this.serversCounter = this.servers.size();
     this.disabledServers = Settings.IMP.COMMANDS.HUB.DISABLED_SERVERS;
@@ -69,6 +72,12 @@ public class HubCommand implements SimpleCommand {
     } else {
       serverName = this.servers.get(0);
     }
+
+    RegisteredServer toConnect = null;
+    if (this.spreadHandler != null) {
+      RegisteredServer firstAvailableHubServer = this.spreadHandler.firstAvailableHub();
+      if (firstAvailableHubServer != null) toConnect = firstAvailableHubServer;
+
     RegisteredServer toConnect = this.server.getServer(serverName).orElse(null);
     if (toConnect == null) {
       source.sendMessage(CommandMessages.SERVER_DOES_NOT_EXIST.args(Component.text(serverName)));

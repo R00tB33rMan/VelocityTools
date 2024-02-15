@@ -40,9 +40,11 @@ import net.elytrium.velocitytools.commands.FindCommand;
 import net.elytrium.velocitytools.commands.HubCommand;
 import net.elytrium.velocitytools.commands.SendCommand;
 import net.elytrium.velocitytools.commands.VelocityToolsCommand;
+import net.elytrium.velocitytools.handlers.HubSpreadHandler;
 import net.elytrium.velocitytools.hooks.HandshakeHook;
 import net.elytrium.velocitytools.hooks.HooksInitializer;
 import net.elytrium.velocitytools.listeners.BrandChangerPingListener;
+import net.elytrium.velocitytools.listeners.HubSpreadListener;
 import net.elytrium.velocitytools.listeners.ProtocolBlockerJoinListener;
 import net.elytrium.velocitytools.listeners.ProtocolBlockerPingListener;
 import net.kyori.adventure.text.Component;
@@ -71,6 +73,7 @@ public class VelocityTools {
   private final Path dataDirectory;
   private final Metrics.Factory metricsFactory;
   private final PreparedPacketFactory packetFactory;
+  private HubSpreadHandler spreadHandler;
 
   @Inject
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -140,7 +143,7 @@ public class VelocityTools {
     List<String> aliases = Settings.IMP.COMMANDS.HUB.ALIASES;
     aliases.forEach(alias -> this.server.getCommandManager().unregister(alias));
     if (Settings.IMP.COMMANDS.HUB.ENABLED && !aliases.isEmpty()) {
-      this.server.getCommandManager().register(aliases.get(0), new HubCommand(this.server), aliases.toArray(new String[0]));
+      this.server.getCommandManager().register(aliases.get(0), new HubCommand(this.server, this.spreadHandler), aliases.toArray(new String[0]));
     }
 
     this.server.getCommandManager().unregister("alert");
@@ -176,6 +179,10 @@ public class VelocityTools {
       this.server.getEventManager().register(this, new ProtocolBlockerJoinListener());
     }
 
+    if (Settings.IMP.TOOLS.HUB_SPREAD.ENABLED) {
+      this.server.getEventManager().register(this, new HubSpreadListener(this.spreadHandler));
+    }
+
     HandshakeHook.reload(this.packetFactory);
   }
 
@@ -194,5 +201,9 @@ public class VelocityTools {
 
   public static Serializer getSerializer() {
     return SERIALIZER;
+  }
+
+  public static HubSpreadHandler getSpreadHandler() {
+    return HUB_SPREAD_HANDLER;
   }
 }
