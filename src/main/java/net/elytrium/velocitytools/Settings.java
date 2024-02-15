@@ -140,16 +140,16 @@ public class Settings extends YamlSerializable {
       @Comment(@CommentValue("If true, all protocols except those listed below will be blocked."))
       public boolean WHITELIST = false;
       @Comment({
-          @CommentValue("You can set either a protocol number here (e.g. '340' for 1.12.2) or a Minecraft version below (e.g. '1.12.2')"),
-          @CommentValue("You can find a list of protocols here: https://wiki.vg/Protocol_version_numbers"),
+              @CommentValue("You can set either a protocol number here (e.g. '340' for 1.12.2) or a Minecraft version below (e.g. '1.12.2')"),
+              @CommentValue("You can find a list of protocols here: https://wiki.vg/Protocol_version_numbers"),
       })
       public List<Integer> PROTOCOLS = List.of(9999, 9998);
       @Comment({
-          @CommentValue("List of versions:"),
-          @CommentValue("1.7.2, 1.7.6, 1.8, 1.9, 1.9.1, 1.9.2, 1.9.4, 1.10, 1.11, 1.11.1, 1.12, 1.12.1, 1.12.2,"),
-          @CommentValue("1.13, 1.13.1, 1.13.2, 1.14, 1.14.1, 1.14.2, 1.14.3, 1.14.4, 1.15, 1.15.1, 1.15.2,"),
-          @CommentValue("1.16, 1.16.1, 1.16.2, 1.16.3, 1.16.4, 1.17, 1.17.1, 1.18, 1.18.2, 1.19, 1.19.1, 1.19.3, 1.19.4,"),
-          @CommentValue("1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, LATEST"),
+              @CommentValue("List of versions:"),
+              @CommentValue("1.7.2, 1.7.6, 1.8, 1.9, 1.9.1, 1.9.2, 1.9.4, 1.10, 1.11, 1.11.1, 1.12, 1.12.1, 1.12.2,"),
+              @CommentValue("1.13, 1.13.1, 1.13.2, 1.14, 1.14.1, 1.14.2, 1.14.3, 1.14.4, 1.15, 1.15.1, 1.15.2,"),
+              @CommentValue("1.16, 1.16.1, 1.16.2, 1.16.3, 1.16.4, 1.17, 1.17.1, 1.18, 1.18.2, 1.19, 1.19.1, 1.19.3, 1.19.4,"),
+              @CommentValue("1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, LATEST"),
       })
       public List<String> VERSIONS = List.of("1.7.2");
       public String MINIMUM_VERSION = "1.7.2";
@@ -195,12 +195,11 @@ public class Settings extends YamlSerializable {
     }
 
     @Comment(@CommentValue("Hub Splitter configuration section"))
-    public static class HUB_SPREAD
-    {
+    public static class HUB_SPREAD {
       public boolean ENABLED = true;
-      public List<String> SERVERS = List.of("hub-1", "hub-2"); @Comment(@CommentValue("Possible methods: 'LOWEST', 'CYCLE'"))
-    public String HUB_SPREAD_METHOD = "LOWEST"; }
-    public boolean ENABLED = true;
-    public List<String> SERVERS = List.of("hub-1", "hub-2"); }
-
+      public List<String> SERVERS = List.of("hub-1", "hub-2");
+      @Comment(@CommentValue("Possible methods: 'LOWEST', 'CYCLE'"))
+      public String HUB_SPREAD_METHOD = "LOWEST";
+    }
+  }
 }
