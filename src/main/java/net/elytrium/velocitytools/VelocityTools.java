@@ -203,7 +203,11 @@ public class VelocityTools {
     return SERIALIZER;
   }
 
-  public static HubSpreadHandler getSpreadHandler() {
-    return HUB_SPREAD_HANDLER;
+  public ProxyServer getServer() {
+    return this.server;
+  }
+
+  public HubSpreadHandler getSpreadHandler() {
+    return this.spreadHandler;
   }
 }

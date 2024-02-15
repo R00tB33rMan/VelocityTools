@@ -24,9 +24,9 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.proxy.command.builtin.CommandMessages;
 import java.util.List;
-import net.elytrium.velocitytools.handlers.HubSpreadHandler;
 import net.elytrium.velocitytools.Settings;
 import net.elytrium.velocitytools.VelocityTools;
+import net.elytrium.velocitytools.handlers.HubSpreadHandler;
 import net.kyori.adventure.text.Component;
 
 public class HubCommand implements SimpleCommand {
@@ -73,18 +73,15 @@ public class HubCommand implements SimpleCommand {
       serverName = this.servers.get(0);
     }
 
-    RegisteredServer toConnect = null;
-    if (this.spreadHandler != null) {
-      RegisteredServer firstAvailableHubServer = this.spreadHandler.firstAvailableHub();
-      if (firstAvailableHubServer != null) toConnect = firstAvailableHubServer;
+    RegisteredServer toConnect;
+      if (this.spreadHandler == null) {
+          source.sendMessage(CommandMessages.SERVER_DOES_NOT_EXIST.args(Component.text(serverName)));
+        return;
+      } else {
+          toConnect = this.spreadHandler.firstAvailableHub();
+      }
 
-    RegisteredServer toConnect = this.server.getServer(serverName).orElse(null);
-    if (toConnect == null) {
-      source.sendMessage(CommandMessages.SERVER_DOES_NOT_EXIST.args(Component.text(serverName)));
-      return;
-    }
-
-    player.getCurrentServer().ifPresent(serverConnection -> {
+      player.getCurrentServer().ifPresent(serverConnection -> {
       String servername = serverConnection.getServer().getServerInfo().getName();
 
       if (this.disabledServers.stream().anyMatch(servername::equals) && !player.hasPermission("velocitytools.command.hub.bypass." + servername)) {

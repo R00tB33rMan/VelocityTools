@@ -21,7 +21,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.elytrium.velocitytools.handlers.HubSpreadHandler;
+import net.elytrium.velocitytools.handlers.HubSpreadHandler;
 
 public final class HubSpreadListener
 {

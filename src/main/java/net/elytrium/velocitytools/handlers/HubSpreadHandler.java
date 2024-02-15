@@ -37,7 +37,7 @@ public class HubSpreadHandler
   private final SpreadMethod spreadMethod;
   private int lastUsed = 0;
   
-  public HubSpreadHandler(RootProxyPlugin plugin) {
+  public HubSpreadHandler(VelocityTools plugin) {
     this.proxyServer = plugin.getServer();
     
     this.spreadMethod = Objects.<SpreadMethod>requireNonNull(SpreadMethod.valueOf(Settings.IMP.TOOLS.HUB_SPREAD.HUB_SPREAD_METHOD), "Specified hub spread method is invalid, the methods are: LOWEST, CYCLE");
