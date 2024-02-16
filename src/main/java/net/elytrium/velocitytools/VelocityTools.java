@@ -35,11 +35,7 @@ import net.elytrium.commons.kyori.serialization.Serializers;
 import net.elytrium.commons.utils.updates.UpdatesChecker;
 import net.elytrium.fastprepare.PreparedPacket;
 import net.elytrium.fastprepare.PreparedPacketFactory;
-import net.elytrium.velocitytools.commands.AlertCommand;
-import net.elytrium.velocitytools.commands.FindCommand;
-import net.elytrium.velocitytools.commands.HubCommand;
-import net.elytrium.velocitytools.commands.SendCommand;
-import net.elytrium.velocitytools.commands.VelocityToolsCommand;
+import net.elytrium.velocitytools.commands.*;
 import net.elytrium.velocitytools.handlers.HubSpreadHandler;
 import net.elytrium.velocitytools.hooks.HandshakeHook;
 import net.elytrium.velocitytools.hooks.HooksInitializer;
@@ -153,6 +149,10 @@ public class VelocityTools {
 
     if (Settings.IMP.COMMANDS.ALERT.ENABLED) {
       this.server.getCommandManager().register("alert", new AlertCommand(this.server));
+    }
+
+    if (Settings.IMP.COMMANDS.PING_CMD.ENABLED) {
+      this.server.getCommandManager().register("ping", new PingCommand(this.server), "pong");
     }
 
     if (Settings.IMP.COMMANDS.FIND.ENABLED) {

@@ -81,6 +81,8 @@ public class Settings extends YamlSerializable {
     public SEND SEND = new SEND();
     public HUB HUB = new HUB();
 
+    public PING_CMD PING_CMD = new PING_CMD();
+
     public static class ALERT {
 
       public boolean ENABLED = true;
@@ -118,6 +120,15 @@ public class Settings extends YamlSerializable {
       public String DISABLED_SERVER = "&cYou cannot use this command here.";
       public List<String> DISABLED_SERVERS = List.of("foo", "bar");
       public List<String> ALIASES = List.of("hub", "lobby");
+    }
+
+    @Comment(@CommentValue("Ping command configuration"))
+    public static class PING_CMD {
+      public boolean ENABLED = true;
+
+      public String PING_SELF = "&aYour ping is {ping}ms";
+      public String PING_OTHER = "&e{player}'s ping is {ping}ms";
+      public String PLAYER_NOT_FOUND = "&c{player} was not found.";
     }
   }
 
