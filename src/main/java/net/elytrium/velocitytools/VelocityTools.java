@@ -180,7 +180,7 @@ public class VelocityTools {
     }
 
     if (Settings.IMP.TOOLS.HUB_SPREAD.ENABLED) {
-      this.server.getEventManager().register(this, new HubSpreadListener(this.spreadHandler));
+      this.server.getEventManager().register(this, new HubSpreadListener(this));
     }
 
     HandshakeHook.reload(this.packetFactory);

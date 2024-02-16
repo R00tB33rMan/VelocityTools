@@ -21,14 +21,17 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import net.elytrium.velocitytools.VelocityTools;
 import net.elytrium.velocitytools.handlers.HubSpreadHandler;
 
 public final class HubSpreadListener
 {
   private final HubSpreadHandler spreadHandler;
+  private final VelocityTools plugin;
   
-  public HubSpreadListener(HubSpreadHandler spreadHandler) {
-    this.spreadHandler = spreadHandler;
+  public HubSpreadListener(VelocityTools plugin) {
+    this.plugin = plugin;
+    this.spreadHandler = plugin.getSpreadHandler();
   }
   
   @Subscribe
