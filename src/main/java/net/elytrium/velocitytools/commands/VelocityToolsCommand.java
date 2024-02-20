@@ -38,7 +38,7 @@ public class VelocityToolsCommand implements SimpleCommand {
   );
 
   private static final Component AVAILABLE_SUBCOMMANDS_MESSAGE = Component.text("Available subcommands:", NamedTextColor.WHITE);
-  private static final Component NO_AVAILABLE_SUBCOMMANDS_MESSAGE = Component.text("There is no available subcommands for you.", NamedTextColor.WHITE);
+  private static final Component NO_AVAILABLE_SUBCOMMANDS_MESSAGE = Component.text("There are no available subcommands for you.", NamedTextColor.WHITE);
 
 
   public final VelocityTools plugin;
