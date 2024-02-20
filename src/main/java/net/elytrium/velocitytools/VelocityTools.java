@@ -107,6 +107,8 @@ public class VelocityTools {
       LOGGER.error("Please update your Velocity binary to 3.1.0+ version", e);
       this.server.shutdown();
     }
+
+    this.spreadHandler = new HubSpreadHandler(this);
   }
 
   @Subscribe

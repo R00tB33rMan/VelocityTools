@@ -23,7 +23,9 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.proxy.command.builtin.CommandMessages;
+
 import java.util.List;
+
 import net.elytrium.velocitytools.Settings;
 import net.elytrium.velocitytools.VelocityTools;
 import net.elytrium.velocitytools.handlers.HubSpreadHandler;
@@ -31,74 +33,74 @@ import net.kyori.adventure.text.Component;
 
 public class HubCommand implements SimpleCommand {
 
-  private final ProxyServer server;
-  private final HubSpreadHandler spreadHandler;
-  private final List<String> servers;
-  private int serversCounter;
-  private final Component disabledServer;
-  private final List<String> disabledServers;
-  private final String youGotMoved;
-  private final Component youGotMovedComponent;
+    private final ProxyServer server;
+    private final HubSpreadHandler spreadHandler;
+    private final List<String> servers;
+    private int serversCounter;
+    private final Component disabledServer;
+    private final List<String> disabledServers;
+    private final String youGotMoved;
+    private final Component youGotMovedComponent;
 
-  public HubCommand(ProxyServer server, HubSpreadHandler spreadHandler) {
-    this.server = server;
-    this.spreadHandler = spreadHandler;
-    this.servers = Settings.IMP.COMMANDS.HUB.SERVERS;
-    this.serversCounter = this.servers.size();
-    this.disabledServers = Settings.IMP.COMMANDS.HUB.DISABLED_SERVERS;
-    this.disabledServer = VelocityTools.getSerializer().deserialize(Settings.IMP.COMMANDS.HUB.DISABLED_SERVER);
-    this.youGotMoved = Settings.IMP.COMMANDS.HUB.YOU_GOT_MOVED;
-    this.youGotMovedComponent = VelocityTools.getSerializer().deserialize(this.youGotMoved);
-  }
-
-  @Override
-  public void execute(SimpleCommand.Invocation invocation) {
-    CommandSource source = invocation.source();
-    if (!(source instanceof Player)) {
-      source.sendMessage(CommandMessages.PLAYERS_ONLY);
-      return;
+    public HubCommand(ProxyServer server, HubSpreadHandler spreadHandler) {
+        this.server = server;
+        this.spreadHandler = spreadHandler;
+        this.servers = Settings.IMP.COMMANDS.HUB.SERVERS;
+        this.serversCounter = this.servers.size();
+        this.disabledServers = Settings.IMP.COMMANDS.HUB.DISABLED_SERVERS;
+        this.disabledServer = VelocityTools.getSerializer().deserialize(Settings.IMP.COMMANDS.HUB.DISABLED_SERVER);
+        this.youGotMoved = Settings.IMP.COMMANDS.HUB.YOU_GOT_MOVED;
+        this.youGotMovedComponent = VelocityTools.getSerializer().deserialize(this.youGotMoved);
     }
 
-    Player player = (Player) source;
+    @Override
+    public void execute(SimpleCommand.Invocation invocation) {
+        CommandSource source = invocation.source();
+        if (!(source instanceof Player)) {
+            source.sendMessage(CommandMessages.PLAYERS_ONLY);
+            return;
+        }
 
-    String serverName;
-    int serversSize = this.servers.size();
-    if (serversSize > 1) {
-      if (++this.serversCounter >= serversSize) {
-        this.serversCounter = 0;
-      }
+        Player player = (Player) source;
 
-      serverName = this.servers.get(this.serversCounter);
-    } else {
-      serverName = this.servers.get(0);
+        String serverName;
+        int serversSize = this.servers.size();
+        if (serversSize > 1) {
+            if (++this.serversCounter >= serversSize) {
+                this.serversCounter = 0;
+            }
+
+            serverName = this.servers.get(this.serversCounter);
+        } else {
+            serverName = this.servers.get(0);
+        }
+
+        RegisteredServer toConnect;
+        if (this.spreadHandler == null) {
+            source.sendMessage(CommandMessages.SERVER_DOES_NOT_EXIST.args(Component.text(serverName)));
+            return;
+        } else {
+            toConnect = this.spreadHandler.firstAvailableHub();
+        }
+
+        player.getCurrentServer().ifPresent(serverConnection -> {
+            String servername = serverConnection.getServer().getServerInfo().getName();
+
+            if (this.disabledServers.stream().anyMatch(servername::equals) && !player.hasPermission("velocitytools.command.hub.bypass." + servername)) {
+                player.sendMessage(this.disabledServer);
+            } else {
+                player.createConnectionRequest(toConnect).connectWithIndication()
+                        .thenAccept(isSuccessful -> {
+                            if (isSuccessful && !this.youGotMoved.isEmpty()) {
+                                player.sendMessage(this.youGotMovedComponent);
+                            }
+                        });
+            }
+        });
     }
 
-    RegisteredServer toConnect;
-      if (this.spreadHandler == null) {
-          source.sendMessage(CommandMessages.SERVER_DOES_NOT_EXIST.args(Component.text(serverName)));
-        return;
-      } else {
-          toConnect = this.spreadHandler.firstAvailableHub();
-      }
-
-      player.getCurrentServer().ifPresent(serverConnection -> {
-      String servername = serverConnection.getServer().getServerInfo().getName();
-
-      if (this.disabledServers.stream().anyMatch(servername::equals) && !player.hasPermission("velocitytools.command.hub.bypass." + servername)) {
-        player.sendMessage(this.disabledServer);
-      } else {
-        player.createConnectionRequest(toConnect).connectWithIndication()
-            .thenAccept(isSuccessful -> {
-              if (isSuccessful && !this.youGotMoved.isEmpty()) {
-                player.sendMessage(this.youGotMovedComponent);
-              }
-            });
-      }
-    });
-  }
-
-  @Override
-  public boolean hasPermission(SimpleCommand.Invocation invocation) {
-    return invocation.source().hasPermission("velocitytools.command.hub");
-  }
+    @Override
+    public boolean hasPermission(SimpleCommand.Invocation invocation) {
+        return invocation.source().hasPermission("velocitytools.command.hub");
+    }
 }
