@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 - 2023 Elytrium
+ * Copyright (C) 2021 - 2024 Elytrium
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,35 +20,60 @@ package net.elytrium.velocitytools.listeners;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.elytrium.velocitytools.VelocityTools;
 import net.elytrium.velocitytools.handlers.HubSpreadHandler;
+import net.kyori.adventure.text.Component;
 
-public final class HubSpreadListener
-{
-  private final HubSpreadHandler spreadHandler;
-  private final VelocityTools plugin;
-  
-  public HubSpreadListener(VelocityTools plugin) {
-    this.plugin = plugin;
-    this.spreadHandler = plugin.getSpreadHandler();
-  }
-  
-  @Subscribe
-  public void chooseInitialServerConnection(ServerPreConnectEvent event) {
-    if (event.getOriginalServer() != null || event.getPreviousServer() != null)
-      return; 
-    RegisteredServer firstHub = this.spreadHandler.firstAvailableHub();
-    if (firstHub == null || event.getResult() == ServerPreConnectEvent.ServerResult.denied())
-      return; 
-    event.setResult(ServerPreConnectEvent.ServerResult.allowed(firstHub));
-  }
-  
-  @Subscribe
-  public void onKickedFromServer(KickedFromServerEvent event) {
-    RegisteredServer firstHub = this.spreadHandler.firstAvailableHub(HubSpreadHandler.SpreadMethod.CYCLE);
-    if (firstHub == null)
-      return; 
-    event.setResult(KickedFromServerEvent.RedirectPlayer.create(firstHub));
-  }
+public final class HubSpreadListener {
+    private final HubSpreadHandler spreadHandler;
+    private final VelocityTools plugin;
+    private boolean connectionDenied;
+
+    public HubSpreadListener(VelocityTools plugin) {
+        this.plugin = plugin;
+        this.spreadHandler = new HubSpreadHandler(plugin);
+    }
+
+    @Subscribe
+    public void chooseInitialServerConnection(ServerPreConnectEvent event) {
+        if (connectionDenied) {
+            event.setResult(ServerPreConnectEvent.ServerResult.denied());
+            return;
+        }
+
+        RegisteredServer selectedServer = spreadHandler.firstAvailableHub();
+
+        // Check if a lobby server is available
+        if (selectedServer != null) {
+            // Attempt to connect to the selected lobby server
+            event.setResult(ServerPreConnectEvent.ServerResult.allowed(selectedServer));
+        } else {
+            // No lobby server available, disconnect the player
+            connectToNextAvailableServer(event.getPlayer());
+        }
+    }
+
+
+    private void connectToNextAvailableServer(Player player) {
+        RegisteredServer nextServer = spreadHandler.nextAvailableHub();
+
+        // Check if a next lobby server is available
+        if (nextServer != null) {
+            // Attempt to connect to the next lobby server
+            player.createConnectionRequest(nextServer).fireAndForget();
+        } else {
+            // No lobby server available, disconnect the player
+            VelocityTools.getLogger().info("All lobby servers unavailable. Disconnecting the player.");
+            player.disconnect(Component.text("All lobby servers are currently unavailable. Please try again later."));
+        }
+    }
+
+
+    @Subscribe
+    public void onKickedFromServer(KickedFromServerEvent event) {
+        Player player = event.getPlayer();
+        connectToNextAvailableServer(player);
+    }
 }

@@ -69,7 +69,7 @@ public class VelocityTools {
   private final Path dataDirectory;
   private final Metrics.Factory metricsFactory;
   private final PreparedPacketFactory packetFactory;
-  private HubSpreadHandler spreadHandler;
+  private final HubSpreadHandler spreadHandler;
 
   @Inject
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -183,6 +183,7 @@ public class VelocityTools {
 
     if (Settings.IMP.TOOLS.HUB_SPREAD.ENABLED) {
       this.server.getEventManager().register(this, new HubSpreadListener(this));
+      VelocityTools.getLogger().atInfo().log("Hubspreader is enabled.");
     }
 
     HandshakeHook.reload(this.packetFactory);
